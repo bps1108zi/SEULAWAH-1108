@@ -1,0 +1,6 @@
+{
+  "name": "SiPerekonomian Aceh Besar - BPS 1108",
+  "description": "Sistem Informasi Perekonomian Daerah dan Karakteristik Pengguna Data BPS Kabupaten Aceh Besar dengan Analisis LQ, DLQ, Tipologi Klassen, Shift-Share, dan Peta Interaktif.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

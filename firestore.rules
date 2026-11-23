@@ -1,0 +1,134 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidAppUser(data) {
+      return data.keys().hasAll(['id', 'name', 'email', 'role', 'gender', 'institution', 'status', 'createdAt'])
+        && data.keys().hasOnly([
+          'id', 'uid', 'name', 'email', 'password', 'role', 'gender', 'age',
+          'institution', 'phone', 'usagePurpose', 'status', 'authProvider',
+          'photoURL', 'createdAt', 'lastLogin'
+        ])
+        && data.id is string && data.id.size() >= 1 && data.id.size() <= 128
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 150
+        && data.email is string && data.email.size() >= 1 && data.email.size() <= 150
+        && data.role in ['admin', 'user']
+        && data.gender in ['Laki-laki', 'Perempuan']
+        && data.institution is string && data.institution.size() <= 200
+        && data.status in ['Aktif', 'Tidak Aktif']
+        && data.createdAt is string && data.createdAt.size() <= 64
+        && (!('age' in data) || (data.age is number && data.age >= 0 && data.age <= 150))
+        && (!('password' in data) || (data.password is string && data.password.size() <= 128))
+        && (!('phone' in data) || (data.phone is string && data.phone.size() <= 40))
+        && (!('usagePurpose' in data) || (data.usagePurpose is string && data.usagePurpose.size() <= 200))
+        && (!('authProvider' in data) || data.authProvider in ['password', 'google'])
+        && (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 500))
+        && (!('uid' in data) || (data.uid is string && data.uid.size() <= 128))
+        && (!('lastLogin' in data) || (data.lastLogin is string && data.lastLogin.size() <= 64));
+    }
+
+    function isValidCustomIndicator(data) {
+      return data.keys().hasAll(['id', 'name', 'code', 'unit', 'source', 'createdAt'])
+        && data.keys().hasOnly([
+          'id', 'name', 'code', 'unit', 'source', 'rowCount', 'colCount',
+          'rowHeaders', 'columnHeaders', 'gridData', 'periodicity', 'category',
+          'createdAt', 'updatedAt'
+        ])
+        && data.id is string && data.id.size() >= 1 && data.id.size() <= 128
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 200
+        && data.code is string && data.code.size() >= 1 && data.code.size() <= 40
+        && data.unit is string && data.unit.size() <= 60
+        && data.source is string && data.source.size() <= 250
+        && data.createdAt is string && data.createdAt.size() <= 64
+        && (!('rowCount' in data) || (data.rowCount is number && data.rowCount >= 1 && data.rowCount <= 100))
+        && (!('colCount' in data) || (data.colCount is number && data.colCount >= 1 && data.colCount <= 100))
+        && (!('rowHeaders' in data) || (data.rowHeaders is list && data.rowHeaders.size() <= 100))
+        && (!('columnHeaders' in data) || (data.columnHeaders is list && data.columnHeaders.size() <= 100))
+        && (!('gridData' in data) || data.gridData is map)
+        && (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64))
+        && (!('periodicity' in data) || data.periodicity in ['tahunan', 'triwulanan'])
+        && (!('category' in data) || (data.category is string && data.category.size() <= 120));
+    }
+
+    function isValidReleaseSchedule(data) {
+      return data.keys().hasAll(['id', 'indicatorCode', 'indicatorName', 'periodTarget', 'releaseDate', 'frequency', 'status'])
+        && data.keys().hasOnly([
+          'id', 'indicatorCode', 'indicatorName', 'periodTarget',
+          'releaseDate', 'frequency', 'status', 'officialBRSTitle',
+          'downloadLink', 'notes'
+        ])
+        && data.id is string && data.id.size() >= 1 && data.id.size() <= 128
+        && data.indicatorCode is string && data.indicatorCode.size() <= 40
+        && data.indicatorName is string && data.indicatorName.size() <= 220
+        && data.periodTarget is string && data.periodTarget.size() <= 120
+        && data.releaseDate is string && data.releaseDate.size() <= 32
+        && data.frequency in ['Triwulanan', 'Tahunan', 'Bulanan']
+        && data.status in ['Mendatang', 'Rilis Hari Ini', 'Telah Rilis']
+        && (!('officialBRSTitle' in data) || (data.officialBRSTitle is string && data.officialBRSTitle.size() <= 300))
+        && (!('downloadLink' in data) || (data.downloadLink is string && data.downloadLink.size() <= 500))
+        && (!('notes' in data) || (data.notes is string && data.notes.size() <= 500));
+    }
+
+    function isValidBpsState(data) {
+      return data.keys().hasAll(['key', 'updatedAt'])
+        && data.keys().hasOnly(['key', 'payload', 'updatedAt', 'updatedBy'])
+        && data.key is string && data.key.size() >= 1 && data.key.size() <= 64
+        && data.updatedAt is string && data.updatedAt.size() <= 64
+        && (!('updatedBy' in data) || (data.updatedBy is string && data.updatedBy.size() <= 150));
+    }
+
+    // Connection check document
+    match /test/connection {
+      allow get: if true;
+    }
+
+    // Multi-device user accounts collection
+    match /app_users/{userId} {
+      allow get: if isValidId(userId);
+      allow list: if true;
+      allow create: if isValidId(userId) && isValidAppUser(incoming());
+      allow update: if isValidId(userId) && isValidAppUser(incoming());
+      allow delete: if isValidId(userId);
+    }
+
+    // Custom Indicators collection
+    match /custom_indicators/{indicatorId} {
+      allow get: if isValidId(indicatorId);
+      allow list: if true;
+      allow create: if isValidId(indicatorId) && isValidCustomIndicator(incoming());
+      allow update: if isValidId(indicatorId) && isValidCustomIndicator(incoming());
+      allow delete: if isValidId(indicatorId);
+    }
+
+    // Release Schedules collection
+    match /release_schedules/{scheduleId} {
+      allow get: if isValidId(scheduleId);
+      allow list: if true;
+      allow create: if isValidId(scheduleId) && isValidReleaseSchedule(incoming());
+      allow update: if isValidId(scheduleId) && isValidReleaseSchedule(incoming());
+      allow delete: if isValidId(scheduleId);
+    }
+
+    // Centralized BPS datasets (economy_data, quarterly_pdrb, formulas, districts, indicator_timestamps)
+    match /bps_state/{docKey} {
+      allow get: if isValidId(docKey);
+      allow list: if true;
+      allow create: if isValidId(docKey) && isValidBpsState(incoming());
+      allow update: if isValidId(docKey) && isValidBpsState(incoming());
+      allow delete: if isValidId(docKey);
+    }
+  }
+}

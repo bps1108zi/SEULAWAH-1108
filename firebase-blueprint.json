@@ -1,0 +1,94 @@
+{
+  "entities": {
+    "AppUser": {
+      "title": "AppUser",
+      "description": "Profil akun pengguna aplikasi SEULAWAH BPS Aceh Besar (termasuk akun Google Sign-In maupun akun terdaftar).",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "uid": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 150 },
+        "email": { "type": "string", "maxLength": 150 },
+        "password": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "gender": { "type": "string", "enum": ["Laki-laki", "Perempuan"] },
+        "age": { "type": "number" },
+        "institution": { "type": "string", "maxLength": 200 },
+        "phone": { "type": "string", "maxLength": 40 },
+        "usagePurpose": { "type": "string", "maxLength": 200 },
+        "status": { "type": "string", "enum": ["Aktif", "Tidak Aktif"] },
+        "authProvider": { "type": "string", "enum": ["password", "google"] },
+        "photoURL": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "lastLogin": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "name", "email", "role", "gender", "institution", "status", "createdAt"]
+    },
+    "CustomIndicatorDoc": {
+      "title": "CustomIndicatorDoc",
+      "description": "Indikator statistik kustom daerah dengan baris, kolom, matriks data, dan waktu pembaruan terbaru.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "code": { "type": "string", "maxLength": 40 },
+        "unit": { "type": "string", "maxLength": 60 },
+        "source": { "type": "string", "maxLength": 250 },
+        "rowCount": { "type": "number" },
+        "colCount": { "type": "number" },
+        "periodicity": { "type": "string", "enum": ["tahunan", "triwulanan"] },
+        "category": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "name", "code", "unit", "source", "createdAt"]
+    },
+    "ReleaseScheduleDoc": {
+      "title": "ReleaseScheduleDoc",
+      "description": "Jadwal rilis Berita Resmi Statistik (BRS) dan publikasi indikator BPS Kabupaten Aceh Besar.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "indicatorCode": { "type": "string", "maxLength": 40 },
+        "indicatorName": { "type": "string", "maxLength": 220 },
+        "periodTarget": { "type": "string", "maxLength": 120 },
+        "releaseDate": { "type": "string", "maxLength": 32 },
+        "frequency": { "type": "string", "enum": ["Triwulanan", "Tahunan", "Bulanan"] },
+        "status": { "type": "string", "enum": ["Mendatang", "Rilis Hari Ini", "Telah Rilis"] },
+        "officialBRSTitle": { "type": "string", "maxLength": 300 },
+        "downloadLink": { "type": "string", "maxLength": 500 },
+        "notes": { "type": "string", "maxLength": 500 }
+      },
+      "required": ["id", "indicatorCode", "indicatorName", "periodTarget", "releaseDate", "frequency", "status"]
+    },
+    "BpsStateDoc": {
+      "title": "BpsStateDoc",
+      "description": "Dokumen dataset statistik regional terpusat (PDRB Tahunan, PDRB Triwulanan, Rumus Formula, 23 Kecamatan, dan Metadata Pembaruan Indikator).",
+      "type": "object",
+      "properties": {
+        "key": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 },
+        "updatedBy": { "type": "string", "maxLength": 150 }
+      },
+      "required": ["key", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/app_users/{userId}": {
+      "schema": { "$ref": "#/entities/AppUser" },
+      "description": "Koleksi profil akun pengguna aplikasi untuk autentikasi lintas perangkat."
+    },
+    "/custom_indicators/{indicatorId}": {
+      "schema": { "$ref": "#/entities/CustomIndicatorDoc" },
+      "description": "Koleksi indikator statistik kustom Aceh Besar."
+    },
+    "/release_schedules/{scheduleId}": {
+      "schema": { "$ref": "#/entities/ReleaseScheduleDoc" },
+      "description": "Koleksi jadwal rilis indikator BPS Aceh Besar."
+    },
+    "/bps_state/{docKey}": {
+      "schema": { "$ref": "#/entities/BpsStateDoc" },
+      "description": "Dokumen terpusat dataset PDRB tahunan, PDRB triwulanan, rumus analisis, dan data kecamatan."
+    }
+  }
+}

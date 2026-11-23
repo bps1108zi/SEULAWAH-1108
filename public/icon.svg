@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#042f73"/>
+      <stop offset="100%" stop-color="#021942"/>
+    </linearGradient>
+    <linearGradient id="mtnGrad" x1="256" y1="220" x2="256" y2="410" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#032b69" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <circle cx="256" cy="240" r="185" fill="#1e40af" opacity="0.22"/>
+  <!-- Stylized Gunung Seulawah Agam silhouette -->
+  <path d="M56 368 L175 232 L222 276 L292 192 L456 368 Z" fill="url(#mtnGrad)"/>
+  <!-- Statistical Bar Chart (BPS Identity Colors) -->
+  <rect x="132" y="268" width="44" height="114" rx="10" fill="#ffffff" opacity="0.96"/>
+  <rect x="196" y="218" width="44" height="164" rx="10" fill="#2ea836"/>
+  <rect x="260" y="172" width="44" height="210" rx="10" fill="#f97316"/>
+  <rect x="324" y="126" width="44" height="256" rx="10" fill="#38bdf8"/>
+  <!-- Upward Trend Curve -->
+  <path d="M114 316 C180 264, 240 232, 304 148 C334 110, 366 94, 396 86" stroke="#fbbf24" stroke-width="15" stroke-linecap="round" fill="none"/>
+  <circle cx="396" cy="86" r="14" fill="#ffffff" stroke="#fbbf24" stroke-width="6"/>
+  <!-- Clean Brand Pill -->
+  <rect x="116" y="406" width="280" height="48" rx="24" fill="#ffffff" opacity="0.98"/>
+  <text x="256" y="438" font-family="DejaVu Sans, Arial, sans-serif" font-size="25" font-weight="bold" fill="#032b69" text-anchor="middle" letter-spacing="3">SEULAWAH</text>
+</svg>
